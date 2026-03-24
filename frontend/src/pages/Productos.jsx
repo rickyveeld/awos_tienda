@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { ShoppingBag, Loader, AlertCircle, Plus, X } from 'lucide-react';
-
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 const Productos = () => {
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
@@ -10,7 +11,7 @@ const Productos = () => {
   const [error, setError] = useState(null);
   const [formularioVisible, setFormularioVisible] = useState(false);
   const [nuevoProducto, setNuevoProducto] = useState({
-    nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: ''
+    nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: '',latitud:'',longitud:''
   });
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const Productos = () => {
       const data = await api.post('/productos', nuevoProducto);
       setProductos([...productos, data.producto]);
       setFormularioVisible(false);
-      setNuevoProducto({ nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: '' });
+      setNuevoProducto({ nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: '',latitud:'',longitud:'' });
     } catch (err) {
       alert("Error al crear el producto");
     }
@@ -63,6 +64,8 @@ const Productos = () => {
           <input type="number" placeholder="Precio" required className="p-2 border rounded" value={nuevoProducto.precio} onChange={e => setNuevoProducto({...nuevoProducto, precio: e.target.value})} />
           <input type="number" placeholder="Stock" className="p-2 border rounded" value={nuevoProducto.stock} onChange={e => setNuevoProducto({...nuevoProducto, stock: e.target.value})} />
           <input type="text" placeholder="URL Imagen" className="p-2 border rounded" value={nuevoProducto.imagen_url} onChange={e => setNuevoProducto({...nuevoProducto, imagen_url: e.target.value})} />
+          <input type="number" placeholder="latitud" className="p-2 border rounded" value={nuevoProducto.latitud} onChange={e => setNuevoProducto({...nuevoProducto, latitud: e.target.value})} />
+          <input type="number" placeholder="longitud" className="p-2 border rounded" value={nuevoProducto.longitud} onChange={e => setNuevoProducto({...nuevoProducto, longitud: e.target.value})} />
           <input type="text" placeholder="ID YouTube (Ej: dQw4w9WgXcQ)" className="p-2 border rounded col-span-2" value={nuevoProducto.youtube_id} onChange={e => setNuevoProducto({...nuevoProducto, youtube_id: e.target.value})} />
           <button type="submit" className="col-span-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-bold">Guardar Producto</button>
         </form>
@@ -89,7 +92,25 @@ const Productos = () => {
                 <span className="text-xs text-slate-400">Stock: {prod.stock}</span>
               </div>
             </div>
+            <div className="h-48 w-full border-t border-slate-100 z-0 relative">
+              <MapContainer center={[prod.latitud || 19.432608,prod.longitud||-99.133209]}
+              zoom={13}
+              style={{ height: "100%", width: "100%",zIndex: 0 }}>
+                
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; openStreetMap'
+                  />
+                  <Marker position={[prod.latitud||19.432608,prod.longitud||-99.133209]}>
+                    <Popup>
+                     ubicacion:<br/> <strong>{prod.nombre}</strong>
+                    </Popup>
+
+                  </Marker>
+                
+                </MapContainer>
+              </div>
           </div>
+          
         ))}
       </div>
     </div>
