@@ -11,7 +11,7 @@ const getProductos = async (req, res) => {
 };
 
 const crearProducto = async (req, res) => {0
-    const { nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id } = req.body;
+    const { nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id, latitud,longitud } = req.body;
 
     try {
         if (!nombre || !precio || !categoria_id) {
@@ -19,12 +19,12 @@ const crearProducto = async (req, res) => {0
         }
 
         const query = `
-            INSERT INTO productos (nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+            INSERT INTO productos (nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id, latitud, longitud)
+            VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9) RETURNING *
         `;
 
         const response = await pool.query(query, [
-            nombre, precio, stock || 0, descripcion || '', imagen_url || '', categoria_id, youtube_id || null
+            nombre, precio, stock || 0, descripcion || '', imagen_url || '', categoria_id, youtube_id || null, latitud || 20.540809, longitud || -100.290876
         ]);
 
         res.status(201).json({
