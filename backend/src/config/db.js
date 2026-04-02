@@ -7,5 +7,5 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
--- hola
+
 module.exports = pool;
