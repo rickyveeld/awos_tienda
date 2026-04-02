@@ -13,8 +13,8 @@ const register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newUser = await pool.query(
-            'INSERT INTO usuarios (email, password, rol) VALUES ($1, $2, $3) RETURNING id, email, rol',
-            [email, passwordHash, 'cliente'] // Asignar rol por defecto
+            'INSERT INTO usuarios (email, password, role) VALUES ($1, $2, $3) RETURNING id, email, role',
+            [email, passwordHash, 'cliente']
         );
 
         res.status(201).json({ msg: "Usuario registrado con éxito", user: newUser.rows[0] });
@@ -34,7 +34,7 @@ const login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, usuario.password);
         if (!isMatch) return res.status(400).json({ msg: "Credenciales inválidas" });
 
-        const payload = { id: usuario.id, rol: usuario.rol, email: usuario.email };
+        const payload = { id: usuario.id, role: usuario.role, email: usuario.email };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ msg: "Bienvenido", token: token });
